@@ -31,7 +31,7 @@ npm install
 - Either compile to JS by running `npx tsc` in the root directory, or run directly using `ts-node`:
   - `npm i ts-node -g`
   - `ts-node src/toPai.ts`
-- Outputs in PNG format
+- Also includes `src/toPng.ts` to actually view the pai image
 
 ## Ending Notes
 There is no guarentee this will ever be updated, and I highly discourage actually using this project. It is really just meant as a test and a learning experience for me.
