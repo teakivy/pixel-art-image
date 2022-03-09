@@ -3,6 +3,8 @@ import fs from 'fs';
 
 import { createCanvas } from 'canvas';
 
+import LZUTF8 from 'lzutf8';
+
 // open a file called "lenna.png"
 // jimp.read('assets/smiley.png', (err: any, img: any) => {
 // 	if (err) throw err;
@@ -23,7 +25,7 @@ class Convertor {
 	async convertToPAI() {
 		let imgString = '';
 
-		jimp.read(this.img, (err, image) => {
+		jimp.read(this.img, async (err, image) => {
 			let width = image.getWidth();
 			let height = image.getHeight();
 
@@ -54,10 +56,55 @@ class Convertor {
 				lastPixel = null;
 			}
 			imgString = imgString.substring(0, imgString.length - 1);
+
+			// compressAsync(
+			// 	'1232',
+			// 	{
+			// 		outputEncoding: 'BinaryString',
+			// 	},
+			// 	(compress) => {
+			// 		console.log('Compressed', compress);
+			// 	}
+			// );
+
+			// try {
+			// 	let compressedData = LZUTF8.compress('', {
+			// 		outputEncoding: 'ByteArray',
+			// 	});
+			// 	console.log(compressedData);
+			// } catch (e) {
+			// 	console.log(LZUTF8.createErrorMessage(e));
+			// 	return;
+			// }
+
+			// console.log(LZUTF8.encodeUTF8(imgString));
+
+			// compressAsync(
+			// 	'1232',
+			// 	{
+			// 		outputEncoding: 'BinaryString',
+			// 	},
+			// 	(compress) => {
+			// 		console.log('Compressed', compress);
+			// 	}
+			// );
+			// try {
+			// 	let compressedData = LZUTF8.compress('', {
+			// 		outputEncoding: 'ByteArray',
+			// 	});
+			// 	console.log(compressedData);
+			// } catch (e) {
+			// 	console.log(LZUTF8.createErrorMessage(e));
+			// 	return;
+			// }
+			// console.log(LZUTF8.encodeUTF8(imgString));
+			imgString = LZUTF8.compress(imgString, {
+				outputEncoding: 'BinaryString',
+			});
 			let self: any = this;
 			fs.writeFile(
 				this.img.substring(0, this.img.length - 3) + 'pai',
-				imgString,
+				await imgString,
 				function (err: any) {
 					if (err) {
 						return console.log(err);
@@ -67,15 +114,26 @@ class Convertor {
 							self.img.substring(0, self.img.length - 3) + 'pai'
 						}`
 					);
+					process.exit(0);
 				}
 			);
+
+			// let buffer = Buffer.from('101121sadsa42342543561a34', 'hex');
+			// // console.log(imgString);
+			// console.log(buffer);
+
+			// fs.createWriteStream(
+			// 	this.img.substring(0, this.img.length - 3) + 'pai'
+			// ).write(buffer);
 		});
 	}
 
 	async convertToPNG() {
 		let imgString = '';
 
-		imgString = fs.readFileSync(this.img).toString(); // read file
+		imgString = LZUTF8.decompress(fs.readFileSync(this.img).toString(), {
+			inputEncoding: 'BinaryString',
+		});
 
 		let lines: string[] | any = imgString.split(lineSeperator);
 
