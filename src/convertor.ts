@@ -2,16 +2,10 @@ import jimp from 'jimp';
 import fs from 'fs';
 
 import { createCanvas } from 'canvas';
+import rgbHex from './rgbHex.js';
+import hexRgb from './hexRgb.js';
 
 import LZUTF8 from 'lzutf8';
-
-// open a file called "lenna.png"
-// jimp.read('assets/smiley.png', (err: any, img: any) => {
-// 	if (err) throw err;
-// 	img.quality(60) // set JPEG quality
-// 		.greyscale() // set greyscale
-// 		.write('converted.png'); // save
-// });
 
 const pixelSeperator = '@';
 const lineSeperator = '&';
@@ -25,6 +19,8 @@ class Convertor {
 	async convertToPAI() {
 		let imgString = '';
 
+		let lines: string[] = [];
+
 		jimp.read(this.img, async (err, image) => {
 			let width = image.getWidth();
 			let height = image.getHeight();
@@ -32,6 +28,7 @@ class Convertor {
 			let lastPixel: any = null;
 			let pixelSize = 0;
 			for (let y = 0; y < height; y++) {
+				let line = '';
 				for (let x = 0; x < width; x++) {
 					let pixel = image.getPixelColor(x, y);
 					let pInfo = jimp.intToRGBA(pixel);
@@ -45,62 +42,80 @@ class Convertor {
 							lastPixel.g !== pInfo.g ||
 							lastPixel.b !== pInfo.b
 						) {
-							imgString += `${lastPixel.r}.${lastPixel.g}.${lastPixel.b}:${pixelSize}${pixelSeperator}`;
+							let hexCode = rgbHex(
+								lastPixel.r,
+								lastPixel.g,
+								lastPixel.b
+							);
+							line += `${hexCode}:${pixelSize}${pixelSeperator}`;
 							pixelSize = 0;
 							lastPixel = pInfo;
 						}
 					}
 				}
-				imgString += `${lastPixel.r}.${lastPixel.g}.${lastPixel.b}:${pixelSize}${lineSeperator}`;
+				let hexCode = rgbHex(lastPixel.r, lastPixel.g, lastPixel.b);
+				line += `${hexCode}:${pixelSize}`;
 				pixelSize = 0;
 				lastPixel = null;
+
+				lines.push(line);
 			}
+
+			// let lineSize = 0;
+			// for (let i = 0; i < lines.length; i++) {
+			// 	if (i <= 1) {
+			// 		imgString += lines[i];
+			// 		continue;
+			// 	}
+
+			// 	lineSize++;
+			// 	if (lines[i] !== lines[i - 1] && lineSize > 1) {
+			// 		imgString += `${lines[i]}x${lineSize}${lineSeperator}`;
+			// 		lineSize = 0;
+			// 	} else {
+			// 		imgString += `${lines[i]}${lineSeperator}`;
+			// 	}
+			// }
+
+			let lastLine = '';
+			let lineSize = 1;
+
+			for (let i = 0; i < lines.length; i++) {
+				if (!lines[i - 1]) {
+					lastLine = lines[i];
+					continue;
+				}
+
+				if (lines[i] == lastLine) {
+					lineSize++;
+				} else {
+					if (lineSize > 1) {
+						imgString += `${lastLine}x${lineSize}${lineSeperator}`;
+					} else {
+						imgString += `${lastLine}${lineSeperator}`;
+					}
+					lineSize = 1;
+					lastLine = lines[i];
+				}
+
+				// lineSize++;
+				// if (lines[i] !== lines[i - 1] && lineSize > 1) {
+				// 	imgString += `${lines[i]}x${lineSize}${lineSeperator}`;
+				// 	console.log(lineSize, i);
+				// 	lineSize = 0;
+				// } else {
+				// 	imgString += `${lines[i]}${lineSeperator}`;
+				// }
+			}
+
+			// imgString = lines.join(lineSeperator);
+
 			imgString = imgString.substring(0, imgString.length - 1);
-
-			// compressAsync(
-			// 	'1232',
-			// 	{
-			// 		outputEncoding: 'BinaryString',
-			// 	},
-			// 	(compress) => {
-			// 		console.log('Compressed', compress);
-			// 	}
-			// );
-
-			// try {
-			// 	let compressedData = LZUTF8.compress('', {
-			// 		outputEncoding: 'ByteArray',
-			// 	});
-			// 	console.log(compressedData);
-			// } catch (e) {
-			// 	console.log(LZUTF8.createErrorMessage(e));
-			// 	return;
-			// }
-
-			// console.log(LZUTF8.encodeUTF8(imgString));
-
-			// compressAsync(
-			// 	'1232',
-			// 	{
-			// 		outputEncoding: 'BinaryString',
-			// 	},
-			// 	(compress) => {
-			// 		console.log('Compressed', compress);
-			// 	}
-			// );
-			// try {
-			// 	let compressedData = LZUTF8.compress('', {
-			// 		outputEncoding: 'ByteArray',
-			// 	});
-			// 	console.log(compressedData);
-			// } catch (e) {
-			// 	console.log(LZUTF8.createErrorMessage(e));
-			// 	return;
-			// }
-			// console.log(LZUTF8.encodeUTF8(imgString));
+			console.log(imgString);
 			imgString = LZUTF8.compress(imgString, {
 				outputEncoding: 'BinaryString',
 			});
+
 			let self: any = this;
 			fs.writeFile(
 				this.img.substring(0, this.img.length - 3) + 'pai',
@@ -117,14 +132,6 @@ class Convertor {
 					process.exit(0);
 				}
 			);
-
-			// let buffer = Buffer.from('101121sadsa42342543561a34', 'hex');
-			// // console.log(imgString);
-			// console.log(buffer);
-
-			// fs.createWriteStream(
-			// 	this.img.substring(0, this.img.length - 3) + 'pai'
-			// ).write(buffer);
 		});
 	}
 
@@ -135,25 +142,36 @@ class Convertor {
 			inputEncoding: 'BinaryString',
 		});
 
-		let lines: string[] | any = imgString.split(lineSeperator);
+		let tlines: string[] | any = imgString.split(lineSeperator);
 
-		for (let i = 0; i < lines.length; i++) {
-			let pixels = lines[i].split(pixelSeperator);
+		let lines: string[] | any = [];
+
+		for (let i = 0; i < tlines.length; i++) {
+			let tline = tlines[i].split('x');
+			let pixels = tline[0].split(pixelSeperator);
 
 			for (let j = 0; j < pixels.length; j++) {
 				let pixel = pixels[j].split(':');
-				let color = pixel[0].split('.');
+				let color = hexRgb(pixel[0]);
+
 				let nPixel = {
-					r: parseInt(color[0]),
-					g: parseInt(color[1]),
-					b: parseInt(color[2]),
+					r: color.red,
+					g: color.green,
+					b: color.blue,
 					size: parseInt(pixel[1]),
 				};
 
 				pixels[j] = nPixel;
 			}
 
-			lines[i] = pixels;
+			// tlines[i] = pixels;
+			if (tline.length > 1) {
+				for (let j = 0; j < parseInt(tline[1]); j++) {
+					lines.push(pixels);
+				}
+			} else {
+				lines.push(pixels);
+			}
 		}
 		let height = lines.length;
 		let width = 0;
