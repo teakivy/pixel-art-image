@@ -11,13 +11,13 @@ It is horribly implemented and takes a larger file size than both PNG and JPG (t
     - `hex` being the hex color code of the pixel
     - `w` being the width of the stretch of color
     - `[xs]` is an optional space for if 2 lines duplicate
-      - If there are 2 duplicate lines, it would be something like this: `ff0000:16x16`
+      - If there are 2 duplicate lines, it would be something like this: `ff0000:16x2`
     - `@` being the "pixel seperator"
     - `:` being the width seperator
     - `x` being the size seperator
     - `&` being the row seperator
   - So a 2x2 of pure red would look something like this:
-    - `f0000:16x16`
+    - `f0000:2x2`
   - Seems simple enough, and horribly optimised, just how i like it!
 
 ## Installation
