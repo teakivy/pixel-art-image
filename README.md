@@ -7,17 +7,17 @@ It is horribly implemented and takes a larger file size than both PNG and JPG (t
 - Pixel Art Image works by a series of lines.
 - Each row of pixels is converted into a special pixel format, intended to work best with simple pixel art without much variation
 - A row of pixels of the same color can be described as so:
-  - `r.g.b:w@r.g.b:w&` ...
-    - `r` being the red value of the pixel
-    - `g` being the green value of the pixel
-    - `b` being the blue value of the pixel
+  - `hex:w[xs]@hex:w[xs]&` ...
+    - `hex` being the hex color code of the pixel
     - `w` being the width of the stretch of color
+    - `[xs]` is an optional space for if 2 lines duplicate
+      - If there are 2 duplicate lines, it would be something like this: `ff0000:16x16`
     - `@` being the "pixel seperator"
-    - `.` being the color seperator
     - `:` being the width seperator
+    - `x` being the size seperator
     - `&` being the row seperator
   - So a 2x2 of pure red would look something like this:
-    - `255.0.0:2&255.0.0:2`
+    - `f0000:16x16`
   - Seems simple enough, and horribly optimised, just how i like it!
 
 ## Installation
