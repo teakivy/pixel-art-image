@@ -1003,6 +1003,11 @@ jpeg-js@0.4.2:
   resolved "https://registry.yarnpkg.com/jpeg-js/-/jpeg-js-0.4.2.tgz#8b345b1ae4abde64c2da2fe67ea216a114ac279d"
   integrity sha512-+az2gi/hvex7eLTMTlbRLOhH6P6WFdk2ITI8HJsaH2VqYO0I594zXSYEP+tf4FW+8Cy68ScDXoAsQdyQanv3sw==
 
+js-string-compression@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/js-string-compression/-/js-string-compression-1.0.1.tgz#8b68e630cb9054c556f78f825f73900ecd166c67"
+  integrity sha1-i2jmMMuQVMVW94+CX3OQDs0WbGc=
+
 json-buffer@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/json-buffer/-/json-buffer-3.0.0.tgz#5b1f397afc75d677bde8bcfc0e47e1f9a3d9a898"
@@ -1053,10 +1058,10 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-lzutf8@0.5.8:
-  version "0.5.8"
-  resolved "https://registry.yarnpkg.com/lzutf8/-/lzutf8-0.5.8.tgz#e07c531ad086258c0d842646bd3b973565823330"
-  integrity sha512-YrwDpLWfVFJfVfVErafPsglTpil+9BIfume6UJ6EWOFFwTJcyvMvDEFts3Ec8rEo4x1hkbh5cDnTAREfzdTSgA==
+lzutf8@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/lzutf8/-/lzutf8-0.6.1.tgz#2e82d86cc19e73d070d5e52a836ca723ffa35a5e"
+  integrity sha512-XsaftVRx/OFJC85vuqWsz4ihvD+DOOL1gU0UbgAR/MMLNvZWWOMncEnAAQf9XOMOHBeVcRxmujvWUo37LYJyMg==
   dependencies:
     readable-stream "^3.6.0"
 

@@ -111,9 +111,9 @@ class Convertor {
 			// imgString = lines.join(lineSeperator);
 
 			imgString = imgString.substring(0, imgString.length - 1);
-			console.log(imgString);
+
 			imgString = LZUTF8.compress(imgString, {
-				outputEncoding: 'BinaryString',
+				outputEncoding: 'ByteArray',
 			});
 
 			let self: any = this;
@@ -138,8 +138,8 @@ class Convertor {
 	async convertToPNG() {
 		let imgString = '';
 
-		imgString = LZUTF8.decompress(fs.readFileSync(this.img).toString(), {
-			inputEncoding: 'BinaryString',
+		imgString = LZUTF8.decompress(fs.readFileSync(this.img), {
+			inputEncoding: 'ByteArray',
 		});
 
 		let tlines: string[] | any = imgString.split(lineSeperator);
@@ -205,13 +205,17 @@ class Convertor {
 			out.write(chunk);
 		});
 
-		stream.on('end', function () {
+		await stream.on('end', function () {
 			console.log(
 				`Created ${
 					self.img.substring(0, self.img.length - 4) +
 					'-converted.png'
 				}`
 			);
+		
+			setTimeout(() => {
+				process.exit(0);
+			}, 100);
 		});
 	}
 }
